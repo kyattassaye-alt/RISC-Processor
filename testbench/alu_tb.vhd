@@ -1,8 +1,8 @@
-library IEE
+library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL
+use IEEE.NUMERIC_STD.ALL;
 
-ntity ALU_TB is
+entity ALU_TB is
 end ALU_TB;
 
 architecture Behavioral of ALU_TB is

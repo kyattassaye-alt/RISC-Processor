@@ -1,0 +1,7 @@
+v 4
+file . "src/alu.vhd" "233dc8fe13a96e741e96b151e7423d03c7dfeb89" "20261114042610.063":
+  entity alu at 1( 0) + 0 on 15;
+  architecture behavioral of alu at 15( 505) + 0 on 16;
+file . "testbench/alu_tb.vhd" "c1a8b5fb0510f2b6414142796ed5e4d799c652b0" "20261114042610.063":
+  entity alu_tb at 1( 0) + 0 on 17;
+  architecture behavioral of alu_tb at 8( 100) + 0 on 18;

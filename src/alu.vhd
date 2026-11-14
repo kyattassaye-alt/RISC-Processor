@@ -1,6 +1,6 @@
-library IEE
+library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL
+use IEEE.NUMERIC_STD.ALL;
 
 entity ALU is
     Port (
@@ -9,7 +9,7 @@ entity ALU is
         ALUControl  :in STD_LOGIC_VECTOR(1 downto 0); -- tells which instruction to execute
         Result      :out STD_LOGIC_VECTOR(31 downto 0); -- result of the operation which is also 32 bits wide
         Zero        :out STD_LOGIC
-    )
+    );
 end ALU;
 
 architecture Behavioral of ALU is
@@ -37,11 +37,12 @@ begin
                 ALURESULT <= STD_LOGIC_VECTOR(A NAND B);
 
             when others =>
-                ALURESULT <= ('others'<= '0');
-            end case 
-    end process
+                ALURESULT <= (others => '0');
+            end case;
+    end process;
 
     Result <= ALURESULT;
 
     -- IS THE ALU RESULT ZERO ? 
-    zero <= '1' when ALURESULT <= x"00000000" else '0';
+    zero <= '1' when ALURESULT = x"00000000" else '0';
+end Behavioral;
