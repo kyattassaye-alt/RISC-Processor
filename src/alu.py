@@ -21,6 +21,6 @@ class ALU:
         # result staying within 32 bits
 
         result = result & 0xFFFFFFFF
-        zero = (result == 0) # useful for the bne instruction
+        zero = (result == 0) #  for the bne instruction
 
         return result ,zero
