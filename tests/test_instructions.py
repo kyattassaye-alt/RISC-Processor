@@ -13,22 +13,24 @@ class TestProcessorInstructions(unittest.TestCase):
         self.processor = Processor()
 
     def test_add(self):
-        self.processor.register_file.write(8, 10)
-        self.processor.register_file.write(9, 15)
+        # testing add $t5, $t3, $s1
+        self.processor.register_file.write(11, 10)#$t3 is 11
+        self.processor.register_file.write(17, 15) #$s1 is 17
 
         instruction = {
             "op": "add",
-            "rs": 8,
-            "rt": 9,
-            "rd": 10
+            "rs": 11,
+            "rt":17,
+            "rd": 13 #$t5 is 13
         }
 
         self.processor.execute(instruction)
 
-        self.assertEqual(self.processor.register_file.read(10), 25)
+        self.assertEqual(self.processor.register_file.read(13), 25)
         self.assertEqual(self.processor.pc.read(), 4)
 
     def test_lw(self):
+        #lw $t3,300($s2)
         self.processor.register_file.write(18, 100)
         self.processor.memory.write(400, 75)
 
@@ -45,6 +47,7 @@ class TestProcessorInstructions(unittest.TestCase):
         self.assertEqual(self.processor.pc.read(), 4)
 
     def test_sw(self):
+        #sw $t6,400($s7)
         self.processor.register_file.write(23, 1000)
         self.processor.register_file.write(14, 123)
 
@@ -61,6 +64,7 @@ class TestProcessorInstructions(unittest.TestCase):
         self.assertEqual(self.processor.pc.read(), 4)
 
     def test_bne_taken(self):
+        #bne $s6,$t5,200
         self.processor.register_file.write(22, 10)
         self.processor.register_file.write(13, 20)
 
@@ -76,6 +80,7 @@ class TestProcessorInstructions(unittest.TestCase):
         self.assertEqual(self.processor.pc.read(), 804)
 
     def test_bne_not_taken(self):
+        #bne $s6,$t5,200
         self.processor.register_file.write(22, 10)
         self.processor.register_file.write(13, 10)
 
@@ -139,7 +144,7 @@ class TestProcessorInstructions(unittest.TestCase):
         # Set base address to 500
         processor.register_file.write(8, 500)
 
-        # Store a value at address 496
+        # Store a value at address 499
         processor.memory.write(499, 75)
 
         instruction = {
@@ -152,6 +157,7 @@ class TestProcessorInstructions(unittest.TestCase):
         processor.execute(instruction)
 
         self.assertEqual(processor.register_file.read(9), 75)
+        self.assertEqual(processor.pc.read(), 4)
 
     def test_sw_negative_offset(self):
         processor = Processor()
@@ -172,6 +178,7 @@ class TestProcessorInstructions(unittest.TestCase):
         processor.execute(instruction)
 
         self.assertEqual(processor.memory.read(499), 123)
+        self.assertEqual(processor.pc.read(), 4)
 
 if __name__ == "__main__":
     unittest.main()

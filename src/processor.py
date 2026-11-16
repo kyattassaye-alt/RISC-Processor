@@ -123,10 +123,19 @@ class Processor:
         # adding the jump instruction assuming that address contains the calculated jum address
 
         elif operation == "j":
+            #calculating pc +4 
+            pc_plus_4 = self.pc.read()+4
+
             target = instruction["target"] & 0x03FFFFFF
+
             jump_address = (
-                ((self.pc.read()+4) &0xF0000000) |(target<<2))
-            self.pc.update(jump_address)
+                ((pc_plus_4 &0xF0000000) |(target<<2)))
+
+            #first mux normal pc /branch selection. for my design i will just assume branch_address= pc_plus4
+            normal_next_pc= self.mux.select(pc_plus_4,pc_plus_4,0)
+
+            next_pc= self.mux.select(normal_next_pc,jump_address,1)
+            self.pc.update(next_pc)
 
         else:
             raise ValueError("Unknown instruction: " + operation)
