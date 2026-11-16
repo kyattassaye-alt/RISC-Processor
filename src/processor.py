@@ -33,7 +33,9 @@ class Processor:
             destination = self.mux.select(
                 instruction["rt"],instruction["rd"], 1
             )
-            self.register_file.write(destination, result)
+            #memtoreg mux 
+            write_data = self.mux.select(result, 0, 0)
+            self.register_file.write(destination, write_data)
             self.pc.increment()
 
         elif operation == "nand":
@@ -48,7 +50,9 @@ class Processor:
                 instruction["rd"],
                 1
             )
-            self.register_file.write(destination, result)
+            #memtoreg mux 
+            write_data = self.mux.select(result, 0, 0)
+            self.register_file.write(destination, write_data)
             self.pc.increment()
 
         elif operation == "ori":
@@ -60,7 +64,9 @@ class Processor:
             alu_input_b= self.mux.select(rt,immediate,1) # immediate is input 1
 
             result, zero = self.alu.execute(rs, alu_input_b, "OR")
-            self.register_file.write(instruction["rt"], result)
+            #memtoreg mux 
+            write_data = self.mux.select(result, 0, 0)
+            self.register_file.write(instruction["rt"], write_data)
             self.pc.increment()
 
         elif operation == "lw":
@@ -69,13 +75,16 @@ class Processor:
             # adding the sign extend for lw 
 
             offset = self.extender.sign_extend(instruction["offset"])
-            #adding the mux 
+            #adding the alusrc mux 
 
             alu_input_b = self.mux.select(rt, offset,1)
             address ,zero= self.alu.execute(rs,alu_input_b, "ADD")
 
             value = self.memory.read(address)
-            self.register_file.write(instruction["rt"], value)
+            #Memto Reg mux 
+
+            write_data= self.mux.select(address,value,1)
+            self.register_file.write(instruction["rt"], write_data)
             self.pc.increment()
 
         elif operation == "sw":
