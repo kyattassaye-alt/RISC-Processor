@@ -28,7 +28,12 @@ class Processor:
             rt = self.register_file.read(instruction["rt"])
 
             result, zero = self.alu.execute(rs, rt, "ADD")
-            self.register_file.write(instruction["rd"], result)
+
+            #regdst multiplexer for destination
+            destination = self.mux.select(
+                instruction["rt"],instruction["rd"], 1
+            )
+            self.register_file.write(destination, result)
             self.pc.increment()
 
         elif operation == "nand":
@@ -36,7 +41,14 @@ class Processor:
             rt = self.register_file.read(instruction["rt"])
 
             result, zero = self.alu.execute(rs, rt, "NAND")
-            self.register_file.write(instruction["rd"], result)
+
+            #reg dest multiplexer
+            destination = self.mux.select(
+                instruction["rt"],
+                instruction["rd"],
+                1
+            )
+            self.register_file.write(destination, result)
             self.pc.increment()
 
         elif operation == "ori":
@@ -87,12 +99,15 @@ class Processor:
             # sign extend to branch offset 
 
             offset = self.extender.sign_extend(instruction["offset"])
-            if not zero:
-                branch_address= self.pc.read()+4+(offset*4)
-                self.pc.update(branch_address)
+            # both possible nextpc adresses
+            pc_plus_4 = self.pc.read()+4
+            branch_address= pc_plus_4 +(offset*4)
 
-            else:
-                self.pc.increment()
+            #signal with zero
+            pc_src= 0 if zero else 1
+
+            nextpc= self.mux.select(pc_plus_4,branch_address,pc_src)
+            self.pc.update(nextpc)
 
         
 
