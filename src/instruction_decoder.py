@@ -1,18 +1,12 @@
-class Instructions_decoder :
 
-    OPCODES = {
-        "lw" : "100011",
-        "sw" : "101011",
-        "add": "000000",
-        "bne": "000100",
-        "ori" : "100101",
-        "nand": ""
-            }
+class Instructions_decoder:
+
+    INSTRUCTIONS = ["lw", "sw", "add", "bne", "ori", "nand", "j"]
 
     def decode(self, instruction):
         instruction = instruction.lower()
 
-        if instruction not in self.OPCODES:
-            raise ValueError("not in instructions")
+        if instruction not in self.INSTRUCTIONS:
+            raise ValueError("Instruction not supported")
 
-        return self.OPCODES[instruction]
+        return instruction

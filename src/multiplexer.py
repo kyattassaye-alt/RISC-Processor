@@ -3,7 +3,7 @@
 class Multiplexer:
 
     @staticmethod
-    def selection(input0, input1, select_signal):
+    def select(input0, input1, select_signal):
         if select_signal == 0:
             return input0
         elif select_signal ==1:
