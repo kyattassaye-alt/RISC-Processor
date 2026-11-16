@@ -116,12 +116,12 @@ class TestProcessorInstructions(unittest.TestCase):
             "op": "ori",
             "rs": 8,
             "rt": 9,
-            "immediate": 15
+            "immediate": 0x8000
         }
 
         self.processor.execute(instruction)
 
-        self.assertEqual(self.processor.register_file.read(9), 255)
+        self.assertEqual(self.processor.register_file.read(9), 0x0000080F0)
         self.assertEqual(self.processor.pc.read(), 4)
 
     def test_jump(self):
@@ -132,6 +132,46 @@ class TestProcessorInstructions(unittest.TestCase):
 
         self.processor.execute(instruction)
         self.assertEqual(self.processor.pc.read(),400)
+
+    def test_lw_negative_offset(self):
+        processor = Processor()
+
+        # Set base address to 500
+        processor.register_file.write(8, 500)
+
+        # Store a value at address 496
+        processor.memory.write(499, 75)
+
+        instruction = {
+            "op": "lw",
+            "rs": 8,
+            "rt": 9,
+            "offset": 0xFFFF
+        }
+
+        processor.execute(instruction)
+
+        self.assertEqual(processor.register_file.read(9), 75)
+
+    def test_sw_negative_offset(self):
+        processor = Processor()
+
+        # Set base address to 500
+        processor.register_file.write(8, 500)
+
+        # the value we want to store 
+        processor.register_file.write(9, 123)
+
+        instruction = {
+            "op": "sw",
+            "rs": 8,
+            "rt": 9,
+            "offset": 0xFFFF
+        }
+
+        processor.execute(instruction)
+
+        self.assertEqual(processor.memory.read(499), 123)
 
 if __name__ == "__main__":
     unittest.main()

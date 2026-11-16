@@ -12,7 +12,7 @@ class TestImmediateExtender(unittest.TestCase):
 
     def test_sign_extend_negative(self):
         result = ImmediateExtender.sign_extend(0xFFFF)
-        self.assertEqual(result, 0xFFFFFFFF)
+        self.assertEqual(result, -1)
 
     def test_zero_extend(self):
         result = ImmediateExtender.zero_extend(15)

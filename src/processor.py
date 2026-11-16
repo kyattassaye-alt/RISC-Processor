@@ -5,6 +5,7 @@ from src.memory import DataMemory
 from src.program_counter import ProgramCounter
 from src.multiplexer import Multiplexer
 from src.instruction_decoder import Instructions_decoder
+from src.sign_zero_extend import ImmediateExtender
 
 
 class Processor:
@@ -16,6 +17,7 @@ class Processor:
         self.memory = DataMemory()
         self.pc = ProgramCounter()
         self.mux = Multiplexer()
+        self.extender = ImmediateExtender()
 
     def execute(self, instruction):
 
@@ -39,7 +41,7 @@ class Processor:
 
         elif operation == "ori":
             rs = self.register_file.read(instruction["rs"])
-            immediate = instruction["immediate"] & 0xFFFF
+            immediate = self.extender.zero_extend(instruction["immediate"])
 
             result, zero = self.alu.execute(rs, immediate, "OR")
             self.register_file.write(instruction["rt"], result)
@@ -47,7 +49,10 @@ class Processor:
 
         elif operation == "lw":
             rs = self.register_file.read(instruction["rs"])
-            address = rs + instruction["offset"]
+            # adding the sign extend for lw 
+
+            offset = self.extender.sign_extend(instruction["offset"])
+            address = rs + offset
 
             value = self.memory.read(address)
             self.register_file.write(instruction["rt"], value)
@@ -56,7 +61,8 @@ class Processor:
         elif operation == "sw":
             rs = self.register_file.read(instruction["rs"])
             rt = self.register_file.read(instruction["rt"])
-            address = rs + instruction["offset"]
+            offset = self.extender.sign_extend(instruction["offset"])
+            address = rs + offset
 
             self.memory.write(address, rt)
             self.pc.increment()
@@ -65,11 +71,20 @@ class Processor:
             rs = self.register_file.read(instruction["rs"])
             rt = self.register_file.read(instruction["rt"])
 
-            if rs != rt:
-                branch_address = self.pc.read() + 4 + (instruction["offset"] * 4)
+            #using alu to compare both resistor 
+
+            result, zero = self.alu.execute(rs,rt,"SUB")
+            # sign extend to branch offset 
+
+            offset = self.extender.sign_extend(instruction["offset"])
+            if not zero:
+                branch_address= self.pc.read()+4+(offset*4)
                 self.pc.update(branch_address)
+
             else:
                 self.pc.increment()
+
+        
 
         # adding the jump instruction assuming that address contains the calculated jum address
 
