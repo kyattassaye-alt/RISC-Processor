@@ -74,7 +74,9 @@ class Processor:
         # adding the jump instruction assuming that address contains the calculated jum address
 
         elif operation == "j":
-            jump_address = instruction["address"]
+            target = instruction["target"] & 0x03FFFFFF
+            jump_address = (
+                ((self.pc.read()+4) &0xF0000000) |(target<<2))
             self.pc.update(jump_address)
 
         else:

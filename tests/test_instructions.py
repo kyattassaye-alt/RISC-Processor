@@ -124,6 +124,14 @@ class TestProcessorInstructions(unittest.TestCase):
         self.assertEqual(self.processor.register_file.read(9), 255)
         self.assertEqual(self.processor.pc.read(), 4)
 
+    def test_jump(self):
+        instruction ={
+            "op":"j",
+            "target": 100
+        }
+
+        self.processor.execute(instruction)
+        self.assertEqual(self.processor.pc.read(),400)
 
 if __name__ == "__main__":
     unittest.main()
