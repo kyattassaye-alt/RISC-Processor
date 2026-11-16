@@ -41,18 +41,26 @@ class Processor:
 
         elif operation == "ori":
             rs = self.register_file.read(instruction["rs"])
+            rt = self.register_file.read(instruction["rt"])
             immediate = self.extender.zero_extend(instruction["immediate"])
 
-            result, zero = self.alu.execute(rs, immediate, "OR")
+            # using the mux 
+            alu_input_b= self.mux.select(rt,immediate,1) # immediate is input 1
+
+            result, zero = self.alu.execute(rs, alu_input_b, "OR")
             self.register_file.write(instruction["rt"], result)
             self.pc.increment()
 
         elif operation == "lw":
             rs = self.register_file.read(instruction["rs"])
+            rt = self.register_file.read(instruction["rt"])
             # adding the sign extend for lw 
 
             offset = self.extender.sign_extend(instruction["offset"])
-            address = rs + offset
+            #adding the mux 
+
+            alu_input_b = self.mux.select(rt, offset,1)
+            address ,zero= self.alu.execute(rs,alu_input_b, "ADD")
 
             value = self.memory.read(address)
             self.register_file.write(instruction["rt"], value)
@@ -62,7 +70,9 @@ class Processor:
             rs = self.register_file.read(instruction["rs"])
             rt = self.register_file.read(instruction["rt"])
             offset = self.extender.sign_extend(instruction["offset"])
-            address = rs + offset
+
+            alu_input_b= self.mux.select(rt,offset,1)
+            address,zero = self.alu.execute(rs, alu_input_b,"ADD")
 
             self.memory.write(address, rt)
             self.pc.increment()
