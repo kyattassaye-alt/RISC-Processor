@@ -29,6 +29,23 @@ class TestProcessorInstructions(unittest.TestCase):
         self.assertEqual(self.processor.register_file.read(13), 25)
         self.assertEqual(self.processor.pc.read(), 4)
 
+    def test_add_negative_operand(self):
+        # Test: ADD with a negative operand
+        self.processor.register_file.write(11, 10)   # $t3 = 10
+        self.processor.register_file.write(17, -5)   # $s1 = -5
+
+        instruction = {
+            "op": "add",
+            "rs": 11,
+            "rt": 17,
+            "rd": 13
+        }
+
+        self.processor.execute(instruction)
+
+        self.assertEqual(self.processor.register_file.read(13), 5)
+        self.assertEqual(self.processor.pc.read(), 4)
+
     def test_lw(self):
         #lw $t3,300($s2)
         self.processor.register_file.write(18, 100)
@@ -127,6 +144,23 @@ class TestProcessorInstructions(unittest.TestCase):
         self.processor.execute(instruction)
 
         self.assertEqual(self.processor.register_file.read(9), 0x0000080F0)
+        self.assertEqual(self.processor.pc.read(), 4)
+
+
+    def test_ori_different_immediate(self):
+        # Test: ORI with a different immediate value
+        self.processor.register_file.write(8, 0x1000)
+
+        instruction = {
+            "op": "ori",
+            "rs": 8,
+            "rt": 9,
+            "immediate": 0x0025
+        }
+
+        self.processor.execute(instruction)
+
+        self.assertEqual(self.processor.register_file.read(9), 0x1025)
         self.assertEqual(self.processor.pc.read(), 4)
 
     def test_jump(self):
